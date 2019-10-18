@@ -1,0 +1,86 @@
+
+# https://www.youtube.com/watch?v=Fbu7z5dXcRs&feature=em-uploademail
+
+yarn init -y
+
+yarn add express pg pg-hstore sequelize
+
+yarn add sequelize-cli -D
+
+yarn sequelize --help
+
+yarn add nodemon -D
+
+# Crie o script dentro do package.json
+"scripts": {
+    "dev": "nodemon src/server.js"
+  },
+
+# Cria um arquivo .sequelizerc na raíz do projeto
+module.exports = {
+  config: path.resolve(__dirname, 'src', 'config', 'database.js')
+}
+
+# Cria database
+yarn sequelize db:create
+
+# Configure o .sequelizerc novamente
+module.exports = {
+  config: path.resolve(__dirname, 'src', 'config', 'database.js'),
+  'migrations-path': path.resolve(__dirname, 'src', 'database', 'migrations')
+}
+
+# Crie uma pasta src/database/migrations, crie a migration users
+yarn sequelize migration:create --name=create-users
+
+# Configure a migration users e rode
+yarn sequelize db:migrate
+
+# Caso queira desfazer a migration. Obs: use apenas em seu ambiente antes de compartilhá-lo
+yarn sequelize db:migrate:undo
+
+# Para alterar depois que já foi compartilhado
+yarn sequelize migration:create --name=add-active-field-to-users
+
+# Configure a alteração e rode
+yarn sequelize db:migrate
+
+# Cria models e Configure
+
+
+# Agora trabalhar com relacionamento de 1 usuario N endereços
+yarn sequelize migration:create --name=create-addresses
+
+# Configure o endereço e rode
+yarn sequelize db:migrate
+
+yarn sequelize migration:create --name=alter-table-name-addresses
+
+yarn sequelize db:migrate
+
+# N - N
+users
+1 Name One
+2 Name Two
+
+techs
+1 Reactjs
+1 React Native
+1 Node.js
+2 Reactjs
+2 Node.js
+
+1 Usuário possui N tecnologias
+1 Tecnologia pertence à N usuários
+
+# Tabela Pivot
+users_techs
+
+# Agora trabalhar com relacionamento de N usuario N tecnologias
+yarn sequelize migration:create --name=create-techs
+yarn sequelize migration:create --name=create-users_techs
+
+# Configure techs e users_techs e rode
+yarn sequelize db:migrate
+
+# Queries mais complexas
